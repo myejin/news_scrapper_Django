@@ -10,13 +10,15 @@ class Company(models.Model):
         return (self.pk, self.name)
 
 
-class News(models.Model):
+class Article(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     original_link = models.CharField(max_length=50)
     link = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     pubDate = models.DateTimeField(auto_now_add=True)
+    cleaned_data = models.CharField(max_length=100)
+    count = models.IntegerField()
 
     def __str__(self):
         return (self.pk, self.title)
@@ -25,5 +27,5 @@ class News(models.Model):
 class FollowCompany(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
-    receive_email = models.BooleanField()
-    receive_sms = models.BooleanField()
+    receive_email = models.BooleanField(default=False)
+    receive_sms = models.BooleanField(default=False)

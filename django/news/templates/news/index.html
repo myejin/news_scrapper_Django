@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h1>NEWS</h1>
+  <hr>
+  {% for article in articles %}
+    <hr>
+    <p>회사id : {{ article.company.pk }}</p>
+    <p>기사제목 : {{ article.title }}</p>
+  {% endfor %}
+{% endblock content %}
