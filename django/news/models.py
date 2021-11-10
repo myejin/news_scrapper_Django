@@ -7,13 +7,13 @@ class Company(models.Model):
     follow_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="follow_companies", through='FollowCompany')
 
     def __str__(self):
-        return (self.pk, self.name)
+        return f'{self.pk}, {self.name}'
 
 
 class Article(models.Model):
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='articles')
     title = models.CharField(max_length=255)
-    original_link = models.CharField(max_length=50)
+    original_link = models.CharField(max_length=255)
     link = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     pubDate = models.DateTimeField(auto_now_add=True)
@@ -21,7 +21,7 @@ class Article(models.Model):
     count = models.IntegerField()
 
     def __str__(self):
-        return (self.pk, self.title)
+        return f'{self.pk}, {self.title}'
 
 
 class FollowCompany(models.Model):
