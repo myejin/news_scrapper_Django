@@ -29,3 +29,12 @@ class FollowCompany(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     receive_email = models.BooleanField(default=False)
     receive_sms = models.BooleanField(default=False)
+
+
+class Keyword(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='keywords')
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f'{self.pk}, {self.name}'
+        
