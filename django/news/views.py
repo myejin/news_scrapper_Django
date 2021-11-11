@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 
 from .models import Article, Company
-from .serializers import ArticleListSerializer, ArticleSerializer
+from .serializers import ArticleListSerializer, ArticleSerializer, CompanySerializer
 
 
 @api_view(['GET', 'POST'])
@@ -51,6 +51,13 @@ def list_or_create_articles(request):
     elif request.method == 'POST':
         return create_articles()
     
+
+@api_view(['GET'])
+def get_company_by_id(request, company_pk):
+    company = get_object_or_404(Company, pk=company_pk)
+    serializer = CompanySerializer(company)
+    return Response(serializer.data)
+
 
 @api_view(['GET'])
 def list_articles_by_company_name(request):
