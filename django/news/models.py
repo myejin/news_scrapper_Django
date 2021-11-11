@@ -36,5 +36,5 @@ class Keyword(models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
-        return f'{self.pk}, {self.name}'
+        return f'{self.pk}, ({self.company.name}, {self.name})'
         
