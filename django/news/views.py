@@ -6,6 +6,7 @@ from rest_framework import status
 
 from .models import Article, Company
 from .serializers import ArticleListSerializer, ArticleSerializer, CompanySerializer
+from .alarm import news_publisher
 
 
 @api_view(['GET', 'POST'])
@@ -17,7 +18,7 @@ def list_or_create_articles(request):
     
     def create_articles():
         articles = request.data
-
+        alerted_articles = []
         for article in articles:
             company_name = article.get('company_name', '')
             if not company_name:
@@ -38,12 +39,15 @@ def list_or_create_articles(request):
                 serializer = ArticleSerializer(instance=saved_article, data=article)
                 if serializer.is_valid(raise_exception=True):
                     serializer.save(company=company)
+                if article['count'] == 3:  # 기준점을 정하기
+                    alerted_articles.append(article)                    
             else:
                 article['count'] = 1
                 serializer = ArticleSerializer(data=article)
                 if serializer.is_valid(raise_exception=True):
                     serializer.save(company=company)
-
+        news_publisher.addNews(alerted_articles)  # 기업이름도 같이 넘어가야해
+        news_publisher.notifyAlarms()
         return Response(status=status.HTTP_201_CREATED)
 
     if request.method == 'GET':
