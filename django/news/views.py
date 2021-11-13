@@ -17,6 +17,10 @@ def list_or_create_articles(request):
         return Response(serializer.data)
     
     def create_articles():
+        def notify_alarms(alerted_articles):
+            news_publisher.addNews(alerted_articles)  # 기업이름도 같이 넘어가야해
+            news_publisher.notifyAlarms()
+            
         articles = request.data
         alerted_articles = []
         for article in articles:
@@ -46,10 +50,10 @@ def list_or_create_articles(request):
                 serializer = ArticleSerializer(data=article)
                 if serializer.is_valid(raise_exception=True):
                     serializer.save(company=company)
-        news_publisher.addNews(alerted_articles)  # 기업이름도 같이 넘어가야해
-        news_publisher.notifyAlarms()
+        notify_alarms(alerted_articles)
         return Response(status=status.HTTP_201_CREATED)
 
+    
     if request.method == 'GET':
         return list_articles()
     elif request.method == 'POST':

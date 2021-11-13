@@ -40,7 +40,7 @@ class Alarm(metaclass=ABCMeta):
 
 class SMSAlarm(Alarm):   
     def update(self):
-        self.publisher.getNews()
+        articles = self.publisher.getNews()
         
         from twilio.rest import Client
 
@@ -52,7 +52,6 @@ class SMSAlarm(Alarm):
         to_lst = [os.environ.get('to_phone')]
         client = Client(account_sid, auth_token)
 
-        articles = self.publisher.getNews()
         for article in articles:
             for to in to_lst:
                 url = article.get('link', '')
