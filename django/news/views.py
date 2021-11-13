@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.shortcuts import get_object_or_404
 
 from rest_framework.response import Response
@@ -58,17 +60,20 @@ def list_or_create_articles(request):
             
             if cleaned_data_article_set.count():
                 saved_article = cleaned_data_article_set.get()
-                article['id'] = saved_article.id
-                article['count'] = saved_article.count + 1
+                saved_date = saved_article.pubDate
+                article_date = datetime.strptime(article['pubDate'], '%a, %d %b %Y %H:%M:%S %z')
+                if (article_date - saved_date).days > 7:
+                    article['count'] = 1
+                else:
+                    article['count'] = saved_article.count + 1
                 serializer = ArticleSerializer(instance=saved_article, data=article)
                 if serializer.is_valid(raise_exception=True):
-                    serializer.save(company=company)
+                    article = serializer.save(company=company)
             else:
-                article['id'] = saved_article.id
                 article['count'] = 1
                 serializer = ArticleSerializer(data=article)
                 if serializer.is_valid(raise_exception=True):
-                    serializer.save(company=company)
+                    article = serializer.save(company=company)
 
         data = {
             'company_name': company_name,
