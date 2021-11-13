@@ -60,10 +60,16 @@ def list_or_create_articles(request):
             
             if cleaned_data_article_set.count():
                 saved_article = cleaned_data_article_set.get()
+
+                # 날짜 파싱
                 saved_date = saved_article.pubDate
                 article_date = datetime.strptime(article['pubDate'], '%a, %d %b %Y %H:%M:%S %z')
+
+                # 만약 저장된 기사 날짜와 새로 들어온 기사 날짜가 7일 이상 차이나면, count = 1로 초기화 한 후 기사 덮어쓰기
                 if (article_date - saved_date).days > 7:
                     article['count'] = 1
+
+                # 날짜 차이가 7일 이내라면 기존의 기사의 count에 +1 한 후, 기사 덮어쓰기
                 else:
                     article['count'] = saved_article.count + 1
                 serializer = ArticleSerializer(instance=saved_article, data=article)
