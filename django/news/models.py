@@ -16,7 +16,7 @@ class Article(models.Model):
     original_link = models.CharField(max_length=255)
     link = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
-    pubDate = models.DateTimeField(auto_now_add=True)
+    pubDate = models.DateTimeField()
     cleaned_data = models.CharField(max_length=100)
     count = models.IntegerField()
 
