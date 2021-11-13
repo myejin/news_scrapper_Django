@@ -1,8 +1,5 @@
 import os
-from dotenv import read_dotenv
 from abc import ABCMeta, abstractmethod
-
-read_dotenv()
 
 class NewsPublisher:
     def __init__(self):
@@ -62,6 +59,8 @@ class SMSAlarm(Alarm):
 
 class EmailAlarm(Alarm):        
     def update(self):
+        articles = self.publisher.getNews()
+
         import smtplib
         from email.mime.text import MIMEText
 
@@ -75,7 +74,6 @@ class EmailAlarm(Alarm):
         # 해당 기업과 이메일알람 선택자를 DB에서 찾아 to_lst 에 넣는다.
         to_lst = [os.environ.get('to_email')]
         
-        articles = self.publisher.getNews()
         for article in articles:
             msg = MIMEText(article.get('link', ''))
             msg["Subject"] = '[기업뉴스]' + article.get('title', '')
