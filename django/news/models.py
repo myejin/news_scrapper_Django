@@ -27,8 +27,8 @@ class Article(models.Model):
 class FollowCompany(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
-    receive_email = models.BooleanField(default=False)
-    receive_sms = models.BooleanField(default=False)
+    # receive_email = models.BooleanField(default=False)
+    # receive_sms = models.BooleanField(default=False)
 
 
 class Keyword(models.Model):
@@ -37,4 +37,11 @@ class Keyword(models.Model):
 
     def __str__(self):
         return f'{self.pk}, ({self.company.name}, {self.name})'
-        
+
+
+class Alarm(models.Model):
+    name = models.CharField(max_length=10)
+    destinations = models.ManyToManyField(FollowCompany, related_name="alarms", blank=True)
+
+    def __str__(self):
+        return self.name

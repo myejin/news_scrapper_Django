@@ -1,12 +1,11 @@
-from django.shortcuts import get_object_or_404
-
+from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 
-from .models import Article, Company
+from .models import Article, Company, Alarm as Al
 from .serializers import ArticleListSerializer, ArticleSerializer, CompanySerializer
-from .alarm import news_publisher
+from .alarm import *
 
 
 @api_view(['GET', 'POST'])
@@ -15,12 +14,16 @@ def list_or_create_articles(request):
         articles = Article.objects.all()
         serializer = ArticleListSerializer(articles, many=True)
         return Response(serializer.data)
-    
-    def create_articles():
-        def notify_alarms(alerted_articles):
-            news_publisher.addNews(alerted_articles)  # 기업이름도 같이 넘어가야해
-            news_publisher.notifyAlarms()
-            
+
+    def notify_alarms(alerted_articles):
+        news_publisher = NewsPublisher()
+        alarms = get_list_or_404(Al)
+        for alarm in alarms:
+            eval(f'{alarm.name}Alarm(news_publisher)')
+        news_publisher.addNews(alerted_articles)  # 기업이름도 같이 넘어가야해
+        news_publisher.notifyAlarms()
+
+    def create_articles():    
         articles = request.data
         alerted_articles = []
         for article in articles:
@@ -50,15 +53,15 @@ def list_or_create_articles(request):
                 serializer = ArticleSerializer(data=article)
                 if serializer.is_valid(raise_exception=True):
                     serializer.save(company=company)
-        notify_alarms(alerted_articles)
-        return Response(status=status.HTTP_201_CREATED)
+        return alerted_articles, Response(status=status.HTTP_201_CREATED)
 
-    
     if request.method == 'GET':
         return list_articles()
     elif request.method == 'POST':
-        return create_articles()
-    
+        alerted_articles, res = create_articles()
+        notify_alarms(alerted_articles)
+        return res
+
 
 @api_view(['GET'])
 def get_company_by_id(request, company_pk):
