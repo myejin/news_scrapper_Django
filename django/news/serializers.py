@@ -10,7 +10,6 @@ class ArticleListSerializer(serializers.ListSerializer):
         return Article.objects.bulk_create(articles)
 
     def update(self, instance, validated_data):
-        print(instance)
         article_mapping = {article.cleaned_data: article for article in instance}
         
         data_mapping = dict()

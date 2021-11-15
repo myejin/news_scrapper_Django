@@ -20,7 +20,8 @@ def list_or_create_articles(request):
 
     def create_articles():
         company_name = request.data['company_name']
-        company_id = get_object_or_404(Company, name=company_name).id
+        company = get_object_or_404(Company, name=company_name)
+        company_id = company.id
 
         datas = request.data['articles']
         for data in datas:
@@ -30,7 +31,7 @@ def list_or_create_articles(request):
         now_date = datetime.now(tz=get_current_timezone())
         seven_days_ago_date = now_date + timedelta(days=-7)
 
-        articles = Article.objects.filter(pubDate__range=(seven_days_ago_date, now_date)).all()
+        articles = Article.objects.filter(pubDate__range=(seven_days_ago_date, now_date), company=company).all()
         serializer = ArticleSerializer(instance=articles, data=datas, many=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
