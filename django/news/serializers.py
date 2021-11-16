@@ -2,7 +2,7 @@ from datetime import datetime
 
 from rest_framework import serializers
 
-from .models import Article, Company
+from .models import Article, Company, Keyword
 
 class ArticleListSerializer(serializers.ListSerializer):
     def create(self, validated_data):
@@ -73,3 +73,16 @@ class ArticleSerializer(serializers.Serializer):
         kwargs['child'] = cls()
         # Instantiate the parent list serializer.
         return ArticleListSerializer(*args, **kwargs)
+
+
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = '__all__'
+
+
+class KeywordSerializer(serializers.ModelSerializer):
+    company = CompanySerializer(read_only=True)
+    class Meta:
+        model = Keyword
+        fields = '__all__'
